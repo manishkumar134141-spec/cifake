@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { testProvider } from '../services/api';
 import { ProviderHealth } from '../types';
-import { CheckCircle2, XCircle, RefreshCw, Globe, Plus, Server } from 'lucide-react';
+import { CheckCircle2, XCircle, RefreshCw, Globe, Plus, Server, ExternalLink, Star } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 export const ApiLabPage: React.FC = () => {
@@ -19,11 +19,24 @@ export const ApiLabPage: React.FC = () => {
 
   const providers = [
     {
+      id: 'gemini',
+      name: 'Google Gemini Vision',
+      envKey: 'GEMINI_API_KEY',
+      models: ['gemini-2.0-flash', 'gemini-1.5-flash'],
+      desc: 'Recommended multimodal visual review engine. Fast, state-of-the-art vision inspection with free tier available.',
+      apiKeyUrl: 'https://aistudio.google.com/app/apikey',
+      recommended: true,
+      badge: 'Free Tier Available'
+    },
+    {
       id: 'openai',
       name: 'OpenAI Vision',
       envKey: 'OPENAI_API_KEY',
-      models: ['gpt-4o'],
-      desc: 'Responses API multimodal vision review engine.'
+      models: ['gpt-4o', 'gpt-4o-mini'],
+      desc: 'Secondary vision review engine via OpenAI Platform API.',
+      apiKeyUrl: 'https://platform.openai.com/api-keys',
+      recommended: false,
+      badge: 'Paid Credits'
     }
   ];
 
@@ -87,13 +100,22 @@ export const ApiLabPage: React.FC = () => {
           return (
             <div
               key={p.id}
-              className="p-6 rounded-xl border border-border bg-surface/50 flex flex-col justify-between space-y-5 font-mono"
+              className={cn(
+                'p-6 rounded-xl border bg-surface/50 flex flex-col justify-between space-y-5 font-mono',
+                p.recommended ? 'border-emerald-500/40' : 'border-border'
+              )}
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-2">
                     <Globe size={16} className="text-foreground" />
                     <span className="font-bold text-base text-foreground">{p.name}</span>
+                    {p.recommended && (
+                      <span className="text-[10px] px-2 py-0.5 rounded font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                        <Star size={10} className="fill-emerald-500" />
+                        <span>Recommended</span>
+                      </span>
+                    )}
                   </div>
 
                   {statusObj ? (
@@ -133,10 +155,16 @@ export const ApiLabPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="pt-3 flex items-center justify-between gap-3 border-t border-border/60">
-                <div className="text-xs text-muted-foreground truncate max-w-[220px]">
-                  {p.models.join(', ')}
-                </div>
+              <div className="pt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border/60">
+                <a
+                  href={p.apiKeyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground font-medium underline underline-offset-4 transition-colors"
+                >
+                  <span>Get API Key</span>
+                  <ExternalLink size={12} />
+                </a>
 
                 <button
                   onClick={() => handleTest(p.id)}

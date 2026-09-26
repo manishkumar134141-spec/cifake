@@ -6,16 +6,14 @@ import { cn } from '../lib/utils';
 interface SettingsPageProps {
   theme: ThemeMode;
   onThemeChange: (theme: ThemeMode) => void;
-  selectedModel: string;
-  onModelChange: (model: string) => void;
+  selectedModel?: string;
+  onModelChange?: (model: string) => void;
   onClearHistory: () => void;
 }
 
 export const SettingsPage: React.FC<SettingsPageProps> = ({
   theme,
   onThemeChange,
-  selectedModel,
-  onModelChange,
   onClearHistory,
 }) => {
   const themeOptions: { id: ThemeMode; label: string; icon: any }[] = [
@@ -68,34 +66,29 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
         </div>
       </div>
 
-      {/* Default Model Selection */}
+      {/* Default Model */}
       <div className="p-6 rounded-xl border border-border bg-surface/50 space-y-4">
         <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground font-medium">
-          Default Model
+          Primary Detection Engine
         </span>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
-          {[
-            { id: 'resnet18', title: 'Modified ResNet18', badge: '11.17M · 97.8%' },
-            { id: 'paper_cnn', title: 'PaperCNN', badge: '141K · 95.7%' },
-          ].map((m) => (
-            <button
-              key={m.id}
-              onClick={() => onModelChange(m.id)}
-              className={cn(
-                'p-4 rounded-lg border text-left transition-all flex items-center justify-between',
-                selectedModel === m.id
-                  ? 'border-foreground bg-foreground text-background'
-                  : 'border-border bg-background hover:bg-surface text-foreground'
-              )}
-            >
-              <div className="flex items-center gap-2.5">
-                <Cpu size={15} />
-                <span className="text-sm font-mono font-bold">{m.title}</span>
+        <div className="pt-1">
+          <div className="p-4 rounded-lg border border-emerald-500/40 bg-surface/80 flex items-center justify-between font-mono">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                <Cpu size={16} />
               </div>
-              <span className="text-xs font-mono opacity-80">{m.badge}</span>
-            </button>
-          ))}
+              <div>
+                <div className="text-sm font-bold text-foreground flex items-center gap-2">
+                  <span>Modified ResNet18</span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-500/30 uppercase">
+                    Active & Required
+                  </span>
+                </div>
+                <span className="text-xs text-muted-foreground">11.17M Parameters · 97.77% CIFAKE Benchmark Accuracy</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

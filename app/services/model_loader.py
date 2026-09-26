@@ -74,7 +74,8 @@ def get_model(model_name: str):
     return load_model_instance(model_name)
 
 def get_available_models():
-    return list(_MODEL_SPECS.values())
+    """Return only the required, high-accuracy detector model."""
+    return [_MODEL_SPECS["resnet18"]]
 
 def get_model_specs(model_name: str) -> Optional[Dict[str, Any]]:
     return _MODEL_SPECS.get(model_name.lower().replace("-", "_"))

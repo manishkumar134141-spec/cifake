@@ -81,7 +81,7 @@ export async function runRobustness(file: File, model: string = 'resnet18'): Pro
   return res.json();
 }
 
-export async function fetchGradCAM(file: File, model: string = 'paper_cnn'): Promise<GradCAMData> {
+export async function fetchGradCAM(file: File, model: string = 'resnet18'): Promise<GradCAMData> {
   const formData = new FormData();
   formData.append('image', file);
   formData.append('model', model);
@@ -94,7 +94,7 @@ export async function fetchGradCAM(file: File, model: string = 'paper_cnn'): Pro
   return res.json();
 }
 
-export async function runCompare(file: File, models: string[] = ['resnet18', 'paper_cnn']): Promise<CompareResponse> {
+export async function runCompare(file: File, models: string[] = ['resnet18', 'gemini:flash']): Promise<CompareResponse> {
   const formData = new FormData();
   formData.append('image', file);
   formData.append('models', models.join(','));

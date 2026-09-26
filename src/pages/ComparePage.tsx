@@ -13,14 +13,13 @@ export const ComparePage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [selectedEngines, setSelectedEngines] = useState<string[]>([
     'resnet18',
-    'paper_cnn',
-    'openai:gpt-4o'
+    'gemini:flash'
   ]);
 
   const availableEngines = [
-    { id: 'resnet18', name: 'ResNet18', type: 'detector' },
-    { id: 'paper_cnn', name: 'PaperCNN', type: 'detector' },
-    { id: 'openai:gpt-4o', name: 'OpenAI (GPT-4o)', type: 'vision-review' }
+    { id: 'resnet18', name: 'ResNet18 (Required)', type: 'detector' },
+    { id: 'gemini:flash', name: 'Gemini Vision (Recommended)', type: 'vision-review' },
+    { id: 'openai:gpt-4o', name: 'OpenAI GPT-4o', type: 'vision-review' }
   ];
 
   const handleSelectFile = (newFile: File) => {

@@ -1,7 +1,7 @@
 import { ModelSpecification } from '../types';
 
 export const MODEL_REGISTRY: ModelSpecification[] = [
-  // Local Detectors (Layer 1)
+  // Required Local Detector (Layer 1)
   {
     id: 'resnet18',
     name: 'Modified ResNet18',
@@ -9,30 +9,29 @@ export const MODEL_REGISTRY: ModelSpecification[] = [
     parameters: 11169345,
     input_resolution: '32 × 32 RGB',
     architecture: 'Adapted ResNet18 (3×3 CIFAR stem, 1 output logit)',
-    description: 'CIFAKE benchmark detector with 97.77% peak validation accuracy.',
-    type: 'detector',
-    status: 'online'
-  },
-  {
-    id: 'paper_cnn',
-    name: 'PaperCNN',
-    provider: 'local',
-    parameters: 141345,
-    input_resolution: '32 × 32 RGB',
-    architecture: '2-Stage ConvNet + FC (141,345 trainable parameters)',
-    description: 'CIFAKE research paper baseline compact CNN with 95.68% validation accuracy.',
+    description: 'Primary benchmark-calibrated detector yielding 97.77% peak validation accuracy on the CIFAKE dataset. Required engine.',
     type: 'detector',
     status: 'online'
   },
 
-  // External Vision Review (Layer 2) — Single OpenAI Model
+  // Recommended External Vision Review (Layer 2)
+  {
+    id: 'gemini:flash',
+    name: 'Google Gemini Vision',
+    provider: 'gemini',
+    input_resolution: 'Multimodal Vision',
+    architecture: 'Google Gemini 1.5 / 2.0 Flash Multimodal Vision',
+    description: 'Recommended multimodal visual review engine. Free API tier available from Google AI Studio.',
+    type: 'vision-review',
+    status: 'configured'
+  },
   {
     id: 'openai:gpt-4o',
-    name: 'OpenAI Vision',
+    name: 'OpenAI GPT-4o Vision',
     provider: 'openai',
     input_resolution: 'Multimodal Vision',
-    architecture: 'OpenAI Multimodal Vision Model',
-    description: 'Secondary visual observation engine via OpenAI Responses API.',
+    architecture: 'OpenAI GPT-4o Multimodal Vision',
+    description: 'Secondary multimodal visual review engine via OpenAI Platform API.',
     type: 'vision-review',
     status: 'configured'
   }

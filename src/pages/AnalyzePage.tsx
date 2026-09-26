@@ -18,7 +18,6 @@ export const AnalyzePage: React.FC<AnalyzePageProps> = ({ onSaveHistory, onNavig
     file,
     previewUrl,
     imageDimensions,
-    selectedModel,
     setSelectedModel,
     status,
     error,
@@ -37,11 +36,7 @@ export const AnalyzePage: React.FC<AnalyzePageProps> = ({ onSaveHistory, onNavig
 
   const handleModeChange = (newMode: AnalysisMode) => {
     setMode(newMode);
-    if (newMode === 'FAST') {
-      setSelectedModel('resnet18');
-    } else if (newMode === 'DEEP') {
-      setSelectedModel('paper_cnn');
-    }
+    setSelectedModel('resnet18');
   };
 
   return (
@@ -109,43 +104,24 @@ export const AnalyzePage: React.FC<AnalyzePageProps> = ({ onSaveHistory, onNavig
                   </div>
                 </div>
 
-                {/* Model Selector */}
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    disabled={isAnalyzing}
-                    onClick={() => setSelectedModel('resnet18')}
-                    className={cn(
-                      'p-4 text-left rounded-lg border transition-all flex flex-col',
-                      selectedModel === 'resnet18'
-                        ? 'border-foreground bg-foreground text-background shadow-xs'
-                        : 'border-border bg-background hover:bg-surface text-foreground'
-                    )}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Cpu size={14} />
-                      <span className="text-sm font-mono font-bold">ResNet18</span>
+                {/* Active Required Engine */}
+                <div className="p-4 rounded-xl border border-border bg-surface/50 flex items-center justify-between font-mono">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                      <Cpu size={18} />
                     </div>
-                    <span className="text-xs font-mono opacity-80 mt-1.5">11.17M · 97.8%</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    disabled={isAnalyzing}
-                    onClick={() => setSelectedModel('paper_cnn')}
-                    className={cn(
-                      'p-4 text-left rounded-lg border transition-all flex flex-col',
-                      selectedModel === 'paper_cnn'
-                        ? 'border-foreground bg-foreground text-background shadow-xs'
-                        : 'border-border bg-background hover:bg-surface text-foreground'
-                    )}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Cpu size={14} />
-                      <span className="text-sm font-mono font-bold">PaperCNN</span>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-foreground">Modified ResNet18</span>
+                        <span className="text-[10px] px-2 py-0.5 rounded font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 uppercase">
+                          Required
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        11.17M Parameters · 97.77% CIFAKE Benchmark Accuracy
+                      </p>
                     </div>
-                    <span className="text-xs font-mono opacity-80 mt-1.5">141K · 95.7%</span>
-                  </button>
+                  </div>
                 </div>
 
                 {/* Action Button */}
