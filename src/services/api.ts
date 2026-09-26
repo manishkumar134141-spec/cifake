@@ -128,6 +128,27 @@ export async function testProvider(provider: string): Promise<ProviderHealth> {
   return res.json();
 }
 
+export async function getProviderStatus(provider: string = 'gemini'): Promise<{
+  provider: string;
+  is_configured: boolean;
+  masked_key: string;
+  models: string[];
+}> {
+  const res = await fetch(`${API_BASE}/providers/${provider}/status`);
+  if (!res.ok) throw new Error(`Failed to get ${provider} status`);
+  return res.json();
+}
+
+export async function updateProviderConfig(provider: string = 'gemini', apiKey: string): Promise<ProviderHealth> {
+  const res = await fetch(`${API_BASE}/providers/${provider}/config`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ api_key: apiKey })
+  });
+  if (!res.ok) throw new Error(`Failed to configure ${provider}`);
+  return res.json();
+}
+
 export async function exportReport(recordData: Record<string, any>, format: 'json' | 'csv' | 'summary'): Promise<{ filename: string; content: string; format: string }> {
   const res = await fetch(`${API_BASE}/export`, {
     method: 'POST',

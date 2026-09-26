@@ -148,9 +148,24 @@ export const ComparePage: React.FC = () => {
                     )}
 
                     {res.notes && res.notes.length > 0 && (
-                      <p className="text-sm text-muted-foreground pt-1 leading-relaxed">
-                        {res.notes[0]}
-                      </p>
+                      <div className="pt-2 space-y-1.5 border-t border-border/40">
+                        <span className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground font-semibold">
+                          Observations
+                        </span>
+                        <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside leading-relaxed font-sans">
+                          {res.notes.map((note, idx) => (
+                            <li key={idx} className="break-words">{note}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {res.error_message && (
+                      <div className="pt-2 border-t border-rose-500/20">
+                        <p className="text-xs text-rose-500 dark:text-rose-400 font-mono leading-relaxed">
+                          {res.error_message}
+                        </p>
+                      </div>
                     )}
                   </div>
 

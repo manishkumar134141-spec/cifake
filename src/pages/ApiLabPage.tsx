@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
-import { testProvider } from '../services/api';
+import React, { useState, useEffect } from 'react';
+import { testProvider, getProviderStatus, updateProviderConfig } from '../services/api';
 import { ProviderHealth } from '../types';
-import { CheckCircle2, XCircle, RefreshCw, Globe, Plus, Server, ExternalLink, Star } from 'lucide-react';
+import { CheckCircle2, XCircle, RefreshCw, Globe, Plus, Server, ExternalLink, Star, Key, Check } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 export const ApiLabPage: React.FC = () => {
   const [providerStatuses, setProviderStatuses] = useState<Record<string, ProviderHealth>>({});
   const [testing, setTesting] = useState<Record<string, boolean>>({});
+  const [keyInput, setKeyInput] = useState('');
+  const [maskedKey, setMaskedKey] = useState<string | null>(null);
+  const [isConfigured, setIsConfigured] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   // Custom Endpoint Form State
   const [showCustomModal, setShowCustomModal] = useState(false);
@@ -22,13 +27,31 @@ export const ApiLabPage: React.FC = () => {
       id: 'gemini',
       name: 'Google Gemini Vision',
       envKey: 'GEMINI_API_KEY',
-      models: ['gemini-2.0-flash', 'gemini-1.5-flash'],
-      desc: 'Required multimodal visual review engine. Fast, state-of-the-art vision inspection with free tier available.',
+      models: ['gemini-flash-lite-latest', 'gemini-flash-latest', 'gemini-pro-latest'],
+      desc: 'Required multimodal visual review engine. High-speed, state-of-the-art vision inspection using Google AI Studio free tier.',
       apiKeyUrl: 'https://aistudio.google.com/app/apikey',
       recommended: true,
       badge: 'Free Tier Available'
     }
   ];
+
+  // Auto-check status on mount
+  useEffect(() => {
+    async function checkInitialStatus() {
+      try {
+        const info = await getProviderStatus('gemini');
+        setIsConfigured(info.is_configured);
+        setMaskedKey(info.masked_key);
+
+        if (info.is_configured) {
+          handleTest('gemini');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    checkInitialStatus();
+  }, []);
 
   const handleTest = async (providerId: string) => {
     setTesting((prev) => ({ ...prev, [providerId]: true }));
@@ -47,6 +70,28 @@ export const ApiLabPage: React.FC = () => {
       }));
     } finally {
       setTesting((prev) => ({ ...prev, [providerId]: false }));
+    }
+  };
+
+  const handleSaveKey = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!keyInput.trim()) return;
+    setTesting((prev) => ({ ...prev, gemini: true }));
+    setSaveError(null);
+    setSaveSuccess(false);
+
+    try {
+      const res = await updateProviderConfig('gemini', keyInput.trim());
+      setProviderStatuses((prev) => ({ ...prev, gemini: res }));
+      setIsConfigured(true);
+      setMaskedKey(`${keyInput.slice(0, 4)}...${keyInput.slice(-4)}`);
+      setSaveSuccess(true);
+      setKeyInput('');
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (e: any) {
+      setSaveError(e.message || 'Failed to configure API key');
+    } finally {
+      setTesting((prev) => ({ ...prev, gemini: false }));
     }
   };
 
@@ -69,7 +114,7 @@ export const ApiLabPage: React.FC = () => {
             API Lab
           </h2>
           <p className="text-xs font-mono text-muted-foreground mt-0.5">
-            Provider status
+            Cloud Provider Status & Configuration
           </p>
         </div>
 
@@ -95,7 +140,7 @@ export const ApiLabPage: React.FC = () => {
                 p.recommended ? 'border-emerald-500/40' : 'border-border'
               )}
             >
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Globe size={16} className="text-foreground" />
@@ -123,7 +168,7 @@ export const ApiLabPage: React.FC = () => {
                       <span>{statusObj.status}</span>
                     </span>
                   ) : (
-                    <span className="text-xs text-muted-foreground">Unchecked</span>
+                    <span className="text-xs text-muted-foreground">Checking...</span>
                   )}
                 </div>
 
@@ -131,15 +176,63 @@ export const ApiLabPage: React.FC = () => {
                   {p.desc}
                 </p>
 
-                <div className="pt-3 text-xs text-muted-foreground space-y-1.5 border-t border-border/50">
+                {/* API Key Configuration Form */}
+                <form onSubmit={handleSaveKey} className="p-3.5 rounded-lg border border-border/70 bg-background/60 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                      <Key size={13} className="text-muted-foreground" />
+                      <span>Gemini API Key</span>
+                    </div>
+                    {isConfigured && maskedKey && (
+                      <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+                        Active ({maskedKey})
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2">
+                    <input
+                      type="password"
+                      placeholder={isConfigured ? "Update API key..." : "Paste Gemini API key (AQ...)"}
+                      value={keyInput}
+                      onChange={(e) => setKeyInput(e.target.value)}
+                      className="flex-1 px-2.5 py-1.5 rounded-md border border-border bg-surface text-xs font-mono text-foreground focus:outline-hidden focus:border-foreground"
+                    />
+                    <button
+                      type="submit"
+                      disabled={isBusy || !keyInput.trim()}
+                      className="px-3 py-1.5 rounded-md text-xs font-semibold bg-foreground text-background hover:opacity-90 disabled:opacity-50 transition-opacity whitespace-nowrap"
+                    >
+                      Save & Test
+                    </button>
+                  </div>
+
+                  {saveSuccess && (
+                    <p className="text-[11px] text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                      <Check size={12} /> Key saved and verified successfully!
+                    </p>
+                  )}
+                  {saveError && (
+                    <p className="text-[11px] text-rose-500 leading-tight">
+                      {saveError}
+                    </p>
+                  )}
+                </form>
+
+                <div className="pt-2 text-xs text-muted-foreground space-y-1.5 border-t border-border/50">
                   <div className="flex justify-between">
-                    <span>Config:</span>
-                    <span className="text-foreground font-semibold">{p.envKey}</span>
+                    <span>Active Models:</span>
+                    <span className="text-foreground font-semibold">gemini-flash-lite, flash</span>
                   </div>
                   {statusObj?.latency_ms && (
                     <div className="flex justify-between">
                       <span>Latency:</span>
                       <span className="text-foreground font-semibold">{statusObj.latency_ms} ms</span>
+                    </div>
+                  )}
+                  {statusObj?.error && (
+                    <div className="text-[11px] text-rose-500 pt-1 leading-tight">
+                      Error: {statusObj.error}
                     </div>
                   )}
                 </div>
@@ -152,7 +245,7 @@ export const ApiLabPage: React.FC = () => {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground font-medium underline underline-offset-4 transition-colors"
                 >
-                  <span>Get API Key</span>
+                  <span>Get Free Google Key</span>
                   <ExternalLink size={12} />
                 </a>
 
@@ -162,7 +255,7 @@ export const ApiLabPage: React.FC = () => {
                   className="px-4 py-2 rounded-md text-sm font-semibold border border-border bg-background hover:bg-surface text-foreground transition-colors flex items-center gap-2 shadow-xs"
                 >
                   <RefreshCw size={13} className={isBusy ? 'animate-spin' : ''} />
-                  <span>{isBusy ? 'Testing...' : 'Test'}</span>
+                  <span>{isBusy ? 'Testing...' : 'Test Connection'}</span>
                 </button>
               </div>
             </div>
