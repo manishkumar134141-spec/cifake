@@ -35,13 +35,8 @@ class Settings(BaseSettings):
     TARGET_IMAGE_SIZE: tuple = (32, 32)
     DEFAULT_MODEL: str = "resnet18"
 
-    # External Vision Review Providers (read securely from environment)
-    OPENAI_API_KEY: Optional[str] = os.getenv("OPENAI_API_KEY")
+    # Recommended External Vision Review Provider (read securely from environment)
     GEMINI_API_KEY: Optional[str] = os.getenv("GEMINI_API_KEY")
-    ANTHROPIC_API_KEY: Optional[str] = os.getenv("ANTHROPIC_API_KEY")
-    OPENROUTER_API_KEY: Optional[str] = os.getenv("OPENROUTER_API_KEY")
-    OLLAMA_BASE_URL: str = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-    CUSTOM_MODEL_URL: Optional[str] = os.getenv("CUSTOM_MODEL_URL")
 
     # Benchmark metadata
     BENCHMARK_STATS: Dict[str, Any] = {

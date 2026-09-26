@@ -27,7 +27,7 @@ async def health_check():
     return {
         "status": "operational",
         "service": "CIFAKE Engine",
-        "models": ["resnet18", "paper_cnn"],
+        "models": ["resnet18"],
         "input_resolution": "32x32 RGB"
     }
 

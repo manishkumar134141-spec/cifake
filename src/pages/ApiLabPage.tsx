@@ -23,20 +23,10 @@ export const ApiLabPage: React.FC = () => {
       name: 'Google Gemini Vision',
       envKey: 'GEMINI_API_KEY',
       models: ['gemini-2.0-flash', 'gemini-1.5-flash'],
-      desc: 'Recommended multimodal visual review engine. Fast, state-of-the-art vision inspection with free tier available.',
+      desc: 'Required multimodal visual review engine. Fast, state-of-the-art vision inspection with free tier available.',
       apiKeyUrl: 'https://aistudio.google.com/app/apikey',
       recommended: true,
       badge: 'Free Tier Available'
-    },
-    {
-      id: 'openai',
-      name: 'OpenAI Vision',
-      envKey: 'OPENAI_API_KEY',
-      models: ['gpt-4o', 'gpt-4o-mini'],
-      desc: 'Secondary vision review engine via OpenAI Platform API.',
-      apiKeyUrl: 'https://platform.openai.com/api-keys',
-      recommended: false,
-      badge: 'Paid Credits'
     }
   ];
 

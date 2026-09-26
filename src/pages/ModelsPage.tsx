@@ -24,10 +24,6 @@ export const ModelsPage: React.FC = () => {
       label: 'Get Google Gemini API Key (Free Tier)',
       url: 'https://aistudio.google.com/app/apikey',
       badge: 'Free Tier Available'
-    },
-    openai: {
-      label: 'Get OpenAI API Key',
-      url: 'https://platform.openai.com/api-keys'
     }
   };
 

@@ -11,7 +11,6 @@ from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from app.models.resnet18 import ModifiedResNet18
-from app.models.paper_cnn import PaperCNN
 from app.services.preprocessing import CIFAR_MEAN, CIFAR_STD
 
 def create_reference_dataset():
@@ -151,45 +150,7 @@ def calibrate_and_save():
     torch.save(resnet.state_dict(), resnet_path)
     print(f"Saved calibrated ResNet18 weights to {resnet_path}", flush=True)
 
-    # 2. PaperCNN Calibration
-    print("\n--- Calibrating PaperCNN ---", flush=True)
-    paper_cnn = PaperCNN()
-    optimizer_p = optim.Adam(paper_cnn.parameters(), lr=1e-3, weight_decay=1e-4)
-    paper_cnn.train()
-
-    for epoch in range(5):
-        np.random.shuffle(indices)
-        total_loss = 0.0
-        correct = 0
-
-        for start in range(0, dataset_size, batch_size):
-            end = min(start + batch_size, dataset_size)
-            batch_idx = indices[start:end]
-            bx, by = X[batch_idx], y[batch_idx]
-
-            optimizer_p.zero_grad(set_to_none=True)
-            preds = paper_cnn(bx)
-            loss = criterion(preds, by)
-            loss.backward()
-            optimizer_p.step()
-
-            total_loss += float(loss.item()) * len(bx)
-            with torch.no_grad():
-                probs = torch.sigmoid(preds)
-                correct += ((probs >= 0.5) == (by >= 0.5)).sum().item()
-
-            del bx, by, preds, loss
-        gc.collect()
-
-        acc = correct / dataset_size
-        print(f"PaperCNN Epoch {epoch+1:2d}/5 - Loss: {total_loss/dataset_size:.4f} - Accuracy: {acc*100:.2f}%", flush=True)
-
-    paper_cnn.eval()
-    paper_path = os.path.join(checkpoint_dir, "paper_cnn.pth")
-    torch.save(paper_cnn.state_dict(), paper_path)
-    print(f"Saved calibrated PaperCNN weights to {paper_path}", flush=True)
-
-    print("\nCalibration successfully finished!", flush=True)
+    print("\nResNet18 calibration successfully finished!", flush=True)
 
 if __name__ == "__main__":
     calibrate_and_save()

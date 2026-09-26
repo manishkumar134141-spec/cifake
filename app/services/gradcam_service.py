@@ -6,21 +6,17 @@ from PIL import Image
 from app.services.model_loader import get_model
 from typing import Dict, Any
 
-def generate_gradcam(tensor_input: np.ndarray, model_name: str = "paper_cnn") -> Dict[str, Any]:
+def generate_gradcam(tensor_input: np.ndarray, model_name: str = "resnet18") -> Dict[str, Any]:
     """
     Generate genuine Gradient-weighted Class Activation Mapping (Grad-CAM)
-    from the actual PyTorch convolutional layers. Never fabricates heatmaps.
+    from the Modified ResNet18 PyTorch convolutional layer. Never fabricates heatmaps.
     """
-    model = get_model(model_name)
+    model = get_model("resnet18")
     model.eval()
 
-    # Determine target layer
-    if model_name == "paper_cnn":
-        target_layer = model.features[2]  # second Conv2d
-        layer_name = "features.2 (Conv2d)"
-    else:
-        target_layer = model.layer4[-1].conv2  # last residual conv
-        layer_name = "layer4.conv2 (Conv2d)"
+    # Target last residual convolutional layer of ResNet18
+    target_layer = model.layer4[-1].conv2
+    layer_name = "layer4.conv2 (Conv2d)"
 
     activations = []
     gradients = []

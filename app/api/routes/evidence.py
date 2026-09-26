@@ -8,7 +8,7 @@ router = APIRouter()
 @router.post("/evidence/gradcam", response_model=GradCAMResponse)
 async def get_gradcam(
     image: UploadFile = File(...),
-    model: str = Form(default="paper_cnn")
+    model: str = Form(default="resnet18")
 ):
     """
     Generate genuine Grad-CAM activation heatmap from the actual convolutional layers.

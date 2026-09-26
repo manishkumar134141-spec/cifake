@@ -17,9 +17,8 @@ export const ComparePage: React.FC = () => {
   ]);
 
   const availableEngines = [
-    { id: 'resnet18', name: 'ResNet18 (Required)', type: 'detector' },
-    { id: 'gemini:flash', name: 'Gemini Vision (Recommended)', type: 'vision-review' },
-    { id: 'openai:gpt-4o', name: 'OpenAI GPT-4o', type: 'vision-review' }
+    { id: 'resnet18', name: 'ResNet18 (Required Detector)', type: 'detector' },
+    { id: 'gemini:flash', name: 'Gemini Vision (Required API)', type: 'vision-review' }
   ];
 
   const handleSelectFile = (newFile: File) => {

@@ -44,11 +44,11 @@ def test_v2_endpoints():
 
     # 4. Compare
     files = {"image": ("sample.png", img_bytes, "image/png")}
-    data = {"models": "resnet18,paper_cnn"}
+    data = {"models": "resnet18"}
     res = client.post("/api/analyze/compare", files=files, data=data)
     assert res.status_code == 200
     c_data = res.json()
-    assert len(c_data["results"]) == 2
+    assert len(c_data["results"]) >= 1
     print("[OK] Model comparison endpoint passed.")
 
     # 5. Robustness
@@ -62,17 +62,17 @@ def test_v2_endpoints():
 
     # 6. Grad-CAM Evidence
     files = {"image": ("sample.png", img_bytes, "image/png")}
-    res = client.post("/api/evidence/gradcam", files=files, data={"model": "paper_cnn"})
+    res = client.post("/api/evidence/gradcam", files=files, data={"model": "resnet18"})
     assert res.status_code == 200
     cam_data = res.json()
     assert "heatmap_base64" in cam_data
     assert "overlay_base64" in cam_data
     print("[OK] Real PyTorch Grad-CAM calculation passed.")
 
-    # 7. Providers Test (OpenAI)
-    res = client.post("/api/providers/openai/test")
+    # 7. Providers Test (Gemini)
+    res = client.post("/api/providers/gemini/test")
     assert res.status_code == 200
-    print("[OK] OpenAI provider test passed.")
+    print("[OK] Gemini provider test passed.")
 
     # 8. Export
     record = {

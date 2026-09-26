@@ -11,7 +11,7 @@ router = APIRouter()
 @router.post("/analyze/compare", response_model=CompareResponse)
 async def compare_models(
     image: UploadFile = File(..., description="Uploaded image file"),
-    models: str = Form(default="resnet18,paper_cnn", description="Comma-separated model names")
+    models: str = Form(default="resnet18,gemini:flash", description="Comma-separated model names")
 ):
     """
     Execute side-by-side comparison across selected detectors and vision review models.
@@ -26,16 +26,16 @@ async def compare_models(
 
     target_models = [m.strip().lower() for m in models.split(",") if m.strip()]
     if not target_models:
-        target_models = ["resnet18", "paper_cnn"]
+        target_models = ["resnet18", "gemini:flash"]
 
     start_total = time.perf_counter()
     results: List[NormalizedResult] = []
 
     for m_id in target_models:
         # Local detector
-        if m_id in ["resnet18", "paper_cnn"]:
+        if m_id in ["resnet18", "paper_cnn", "detector", "local"]:
             t0 = time.perf_counter()
-            inf = run_inference(tensor_input, model_name=m_id, metadata=metadata)
+            inf = run_inference(tensor_input, model_name="resnet18", metadata=metadata)
             lat = int((time.perf_counter() - t0) * 1000)
 
             results.append(NormalizedResult(

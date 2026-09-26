@@ -20,11 +20,10 @@
 ## 📸 Key Capabilities
 
 ### 1. Dual-Layer Detection Engine
-- **Layer 1: Calibrated Deep Neural Detectors**
-  - **Modified ResNet18 (11.17M parameters)**: Re-engineered with a 3×3 stride-1 stem tailored for 32×32 resolution, producing 97.77% peak validation accuracy.
-  - **PaperCNN (141,345 parameters)**: Efficient baseline architecture following the canonical CIFAKE research paper, achieving 95.68% validation accuracy.
-- **Layer 2: Multimodal Vision Review (LLM Ensembles)**
-  - Optional secondary verification using OpenAI (GPT-4o / GPT-5 vision models), Google Gemini (Gemini 2.5 / 3.8 Flash), Anthropic Claude (Opus 4.8 / Sonnet 4.6), and local Ollama vision models (e.g. LLaVA).
+- **Layer 1: Calibrated Deep Neural Detector (Required)**
+  - **Modified ResNet18 (11.17M parameters)**: Re-engineered with a 3×3 stride-1 stem tailored for 32×32 resolution, producing 97.77% peak validation accuracy on the CIFAKE dataset. The only required detector engine.
+- **Layer 2: Multimodal Vision Review (Required API)**
+  - **Google Gemini Vision**: Secondary verification using Google Gemini multimodal vision model (`gemini-2.0-flash` / `gemini-1.5-flash`). Free API tier available from Google AI Studio: [https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey).
 
 ### 2. Comprehensive Forensic Toolsuite
 - **Real PyTorch Grad-CAM**: Gradient-weighted Class Activation Mapping computes pixel-level saliency heatmaps and overlays identifying generative artifacts.
@@ -45,13 +44,11 @@
                                           │
                  ┌────────────────────────┴────────────────────────┐
                  ▼                                                 ▼
-       LAYER 1: DETECTORS                               LAYER 2: VISION REVIEW
+        LAYER 1: DETECTOR                               LAYER 2: VISION REVIEW
    (Benchmark-Calibrated Scores)                       (Multimodal Observations)
                  │                                                 │
-   ├── Modified ResNet18 (11.17M)                   ├── OpenAI (GPT-4o / Vision)
-   └── PaperCNN (141,345 params)                    ├── Google Gemini (Gemini Flash)
-                                                    ├── Anthropic (Claude Sonnet / Opus)
-                                                    └── Ollama (Local open weights)
+    Modified ResNet18 (11.17M)                           Google Gemini Vision
+  (97.77% Peak Val Accuracy)                         (Free tier via AI Studio)
                  │                                                 │
                  └────────────────────────┬────────────────────────┘
                                           │
@@ -92,8 +89,7 @@ CIFAKE/
 │   ├── core/
 │   │   └── config.py           # Application settings, keys & benchmark stats
 │   ├── models/
-│   │   ├── paper_cnn.py        # 141K parameter PaperCNN architecture
-│   │   └── resnet18.py         # 11.17M parameter Modified ResNet18
+│   │   └── resnet18.py         # 11.17M parameter Modified ResNet18 (Required Detector)
 │   ├── schemas/
 │   │   └── analysis.py         # Pydantic schemas and serialization models
 │   ├── services/
@@ -104,7 +100,7 @@ CIFAKE/
 │   │   ├── robustness_service.py # Controlled image perturbations
 │   │   ├── metadata_extractor.py # SHA-256, format, & EXIF parser
 │   │   ├── provenance_service.py # C2PA signature inspector
-│   │   ├── provider_adapters.py# OpenAI, Gemini, Claude, Ollama adapters
+│   │   ├── provider_adapters.py# Google Gemini vision adapter
 │   │   └── export_service.py   # JSON, CSV, and summary report generator
 │   └── main.py                 # FastAPI application factory & CORS configuration
 ├── src/                        # Vite + React 19 Frontend
