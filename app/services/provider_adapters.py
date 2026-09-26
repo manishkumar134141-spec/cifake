@@ -27,8 +27,14 @@ class GeminiAdapter(VisionProviderAdapter):
     """
     def __init__(self):
         super().__init__("gemini")
-        self.api_key = settings.GEMINI_API_KEY
         self.models = ["gemini-2.0-flash", "gemini-1.5-flash"]
+
+    @property
+    def api_key(self) -> Optional[str]:
+        import os
+        from dotenv import load_dotenv
+        load_dotenv(override=False)
+        return os.getenv("GEMINI_API_KEY") or settings.GEMINI_API_KEY
 
     async def list_models(self) -> List[str]:
         return self.models
