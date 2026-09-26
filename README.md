@@ -1,5 +1,9 @@
 # CIFAKE V2 — Deep-Learning Image Authenticity & Forensic Analysis Platform
 
+> ### 🚀 Made by Manish Kumar
+> **GitHub**: [@manishkumar134141-spec](https://github.com/manishkumar134141-spec)  
+> **Academic Project Report**: [**`CIFAKE_Project_Report_Manish_Kumar.pdf`**](CIFAKE_Project_Report_Manish_Kumar.pdf) *(Included in this repository)*
+
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115%2B-009688.svg)](https://fastapi.tiangolo.com/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-EE4C2C.svg)](https://pytorch.org/)
@@ -9,7 +13,7 @@
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF.svg)](https://vitejs.dev/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-**CIFAKE V2** is a full-stack, enterprise-grade digital image authenticity platform. Built on the **CIFAKE benchmark** (120,000 images: 60,000 real CIFAR-10 photographs and 60,000 synthetic images generated via Stable Diffusion v1.4), the platform couples precision convolutional neural networks with multimodal Vision LLM review engines and an advanced suite of forensic tools.
+**CIFAKE V2** is a full-stack, enterprise-grade digital image authenticity platform created by **Manish Kumar**. Built on the **CIFAKE benchmark** (120,000 images: 60,000 real CIFAR-10 photographs and 60,000 synthetic images generated via Stable Diffusion v1.4), the platform couples precision convolutional neural networks with multimodal Vision LLM review engines and an advanced suite of forensic tools.
 
 ---
 
@@ -263,13 +267,13 @@ python tests/test_forensics.py
 
 ## 📄 Documentation & Academic Report
 
-For detailed methodology, mathematical formulations, and evaluation results, refer to the complete project report included in this repository:
-- [`CIFAKE_Project_Report_Manish_Kumar.pdf`](CIFAKE_Project_Report_Manish_Kumar.pdf)
+For detailed methodology, mathematical formulations, architectural diagrams, and experimental evaluation results, refer to the complete official project report included in this repository:
+- 📖 [**`CIFAKE_Project_Report_Manish_Kumar.pdf`**](CIFAKE_Project_Report_Manish_Kumar.pdf) *(Comprehensive Project Report by Manish Kumar)*
 
 ---
 
 ## 👤 Author & Acknowledgements
 
-- **Author**: Manish Kumar ([@manishkumar134141-spec](https://github.com/manishkumar134141-spec))
+- **Made by**: **Manish Kumar** ([@manishkumar134141-spec](https://github.com/manishkumar134141-spec))
 - **Benchmark**: [CIFAKE: Image Classification and Explainable Identification of AI-Generated Synthetic Images](https://arxiv.org/abs/2303.14126) (Bird & Lotfi, 2023)
 - **License**: MIT
