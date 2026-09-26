@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment & Secrets
+.env
+.env.local
+*.key
+*.pem
+
+# Build & Cache
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Checkpoints & Large Model Weights
+app/checkpoints/*.pth
+!app/checkpoints/.gitkeep
+
+# CIFAKE V2 Specifications & Prompts (Internal Documentation)
+CIFAKE_V2_*.md
+
+# MCP & IDE Artifacts
+public/plugins/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
