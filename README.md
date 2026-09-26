@@ -195,6 +195,22 @@ Open your browser to: `http://localhost:5173`
 
 ---
 
+## ☁️ Deploying to Vercel
+
+The frontend is ready for 1-click deployment on **Vercel** with the included [vercel.json](vercel.json):
+
+1. Push your repository to GitHub.
+2. Import the repository in your [Vercel Dashboard](https://vercel.com/new).
+3. Vercel automatically detects the Vite configuration:
+   - **Framework Preset**: Vite
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+4. In **Project Settings** → **Environment Variables**, add:
+   - `VITE_API_URL`: URL of your deployed backend service (e.g. `https://your-cifake-backend.onrender.com` or your cloud server).
+5. Click **Deploy**. Vercel rewrites will ensure client-side routing works smoothly across all pages.
+
+---
+
 ## 🔬 Calibrating Models
 
 Model checkpoints (`.pth`) can be generated or fine-tuned locally using the included calibration script:
