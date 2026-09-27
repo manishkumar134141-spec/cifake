@@ -9,6 +9,7 @@ from typing import List
 router = APIRouter()
 
 @router.post("/analyze/compare", response_model=CompareResponse)
+@router.post("/analyze/compare/", response_model=CompareResponse, include_in_schema=False)
 async def compare_models(
     image: UploadFile = File(..., description="Uploaded image file"),
     models: str = Form(default="resnet18,gemini:flash", description="Comma-separated model names")

@@ -8,6 +8,7 @@ from app.core.config import settings
 router = APIRouter()
 
 @router.post("/analyze", response_model=AnalysisResult)
+@router.post("/analyze/", response_model=AnalysisResult, include_in_schema=False)
 async def analyze_image(
     image: UploadFile = File(..., description="Uploaded image file (JPG, PNG, WEBP)"),
     model: str = Form(default="resnet18", description="Target model: 'resnet18' or 'paper_cnn'")

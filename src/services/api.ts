@@ -12,7 +12,9 @@ import {
 } from '../types';
 import { MODEL_REGISTRY } from '../lib/model-registry';
 
-const API_BASE = (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/$/, '') : '') + '/api';
+const rawApiUrl = (import.meta.env.VITE_API_URL || '').trim();
+const isPlaceholder = !rawApiUrl || rawApiUrl.includes('your-backend-url') || rawApiUrl.includes('example.com');
+const API_BASE = (isPlaceholder ? '' : rawApiUrl.replace(/\/$/, '')) + '/api';
 
 export async function checkBackendHealth(): Promise<{ status: string }> {
   const response = await fetch(`${API_BASE}/health`);
