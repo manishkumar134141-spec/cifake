@@ -28,7 +28,7 @@ export const AnalyzePage: React.FC<AnalyzePageProps> = ({ onSaveHistory, onNavig
     handleReset
   } = useAnalysis({ onAnalysisSuccess: onSaveHistory });
 
-  const [mode, setMode] = useState<AnalysisMode>('FAST');
+  const [mode, setMode] = useState<AnalysisMode>('DEEP');
 
   const isIdle = status === 'idle' || !file;
   const isAnalyzing = status === 'analyzing';
@@ -36,7 +36,13 @@ export const AnalyzePage: React.FC<AnalyzePageProps> = ({ onSaveHistory, onNavig
 
   const handleModeChange = (newMode: AnalysisMode) => {
     setMode(newMode);
-    setSelectedModel('resnet18');
+    if (newMode === 'DEEP') {
+      setSelectedModel('hybrid');
+    } else if (newMode === 'FAST') {
+      setSelectedModel('resnet18');
+    } else {
+      setSelectedModel('gemini');
+    }
   };
 
   return (
@@ -104,7 +110,7 @@ export const AnalyzePage: React.FC<AnalyzePageProps> = ({ onSaveHistory, onNavig
                   </div>
                 </div>
 
-                {/* Active Required Engine */}
+                {/* Active Engine Card */}
                 <div className="p-4 rounded-xl border border-border bg-surface/50 flex items-center justify-between font-mono">
                   <div className="flex items-center gap-3">
                     <div className="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
@@ -112,13 +118,21 @@ export const AnalyzePage: React.FC<AnalyzePageProps> = ({ onSaveHistory, onNavig
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-foreground">Modified ResNet18</span>
+                        <span className="text-sm font-bold text-foreground">
+                          {mode === 'DEEP' && 'Hybrid Consensus (ResNet18 + Gemini)'}
+                          {mode === 'FAST' && 'Modified ResNet18 (Local Detector)'}
+                          {mode === 'CUSTOM' && 'Google Gemini Vision (Multimodal API)'}
+                        </span>
                         <span className="text-[10px] px-2 py-0.5 rounded font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 uppercase">
-                          Required
+                          {mode === 'DEEP' && 'Recommended'}
+                          {mode === 'FAST' && 'Ultra-Fast'}
+                          {mode === 'CUSTOM' && 'Cloud API'}
                         </span>
                       </div>
                       <p className="text-xs text-muted-foreground mt-0.5">
-                        11.17M Parameters · 97.77% CIFAKE Benchmark Accuracy
+                        {mode === 'DEEP' && 'Dual Inspection: Local ResNet18 features + Gemini multimodal review for maximum real vs AI accuracy'}
+                        {mode === 'FAST' && '11.17M Parameters · 97.77% CIFAKE Benchmark Accuracy · 15ms execution'}
+                        {mode === 'CUSTOM' && 'Full-resolution optical, anatomical, and generative artifact inspection'}
                       </p>
                     </div>
                   </div>

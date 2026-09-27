@@ -201,6 +201,35 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({
         <div className="pt-2">
           <ConfidenceIndicator confidence={result.confidence} result={result.result} />
         </div>
+
+        {/* Forensic Observations from Gemini / Visual Review */}
+        {result.details?.observations && result.details.observations.length > 0 && (
+          <div className="pt-4 border-t border-border/40 space-y-2">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
+              Visual Forensic Observations
+            </span>
+            <ul className="text-xs text-foreground/80 space-y-1.5 list-disc list-inside leading-relaxed font-sans">
+              {result.details.observations.map((obs: string, idx: number) => (
+                <li key={idx} className="break-words">{obs}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Diagnostic Indicators from ResNet18 / Signal Forensics */}
+        {(!result.details?.observations || result.details.observations.length === 0) &&
+          result.details?.indicators && result.details.indicators.length > 0 && (
+          <div className="pt-4 border-t border-border/40 space-y-2">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
+              Diagnostic Indicators
+            </span>
+            <ul className="text-xs text-foreground/80 space-y-1.5 list-disc list-inside leading-relaxed font-sans">
+              {result.details.indicators.map((ind: string, idx: number) => (
+                <li key={idx} className="break-words">{ind}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
       {/* Action Toolbar */}

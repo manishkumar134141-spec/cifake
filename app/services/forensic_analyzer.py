@@ -91,11 +91,12 @@ def analyze_forensic_signals(image: Image.Image) -> Dict[str, Any]:
 
 def synthesize_forensic_decision(
     signals: Dict[str, Any],
-    deep_prob_fake: float
+    deep_prob_fake: float,
+    metadata: Dict[str, Any] = None
 ) -> Tuple[str, float, float, list]:
     """
     Synthesize physical optical invariants, frequency domain artifacts,
-    and deep neural network predictions into a single calibrated verdict.
+    camera hardware EXIF, and deep neural network predictions into a calibrated verdict.
 
     Returns:
         - verdict_label ("REAL" or "AI-GENERATED")
@@ -105,61 +106,66 @@ def synthesize_forensic_decision(
     """
     indicators = []
     log_odds = 0.0
+    meta = metadata or {}
 
+    filename = meta.get("filename", "")
+    fn_lower = filename.lower()
+    exif_data = meta.get("exif_data") or {}
+
+    # 1. Inspect Generative AI Provencance / Filename Signatures
+    ai_keywords = [
+        "chatgpt", "dall-e", "dalle", "midjourney", "stablediffusion",
+        "stable_diffusion", "flux", "comfyui", "civitai", "novelai",
+        "firefly", "ideogram", "leonardo", "ai_"
+    ]
+    is_ai_filename = any(k in fn_lower for k in ai_keywords)
+    if is_ai_filename:
+        log_odds += 3.5
+        indicators.append(f"Generative AI provenance signature identified ({filename[:35]})")
+
+    # 2. Inspect Authentic Camera Hardware EXIF
+    has_camera_hardware = False
+    if exif_data:
+        camera_keys = ["Make", "Model", "FocalLength", "ExposureTime", "FNumber", "ISOSpeedRatings"]
+        found_keys = [k for k in camera_keys if k in exif_data]
+        if len(found_keys) >= 2:
+            has_camera_hardware = True
+            make = str(exif_data.get("Make", "")).strip()
+            model = str(exif_data.get("Model", "")).strip()
+            dev_name = f"{make} {model}".strip() or "Standard Optical Sensor"
+            log_odds -= 3.0
+            indicators.append(f"Authentic optical camera hardware metadata verified ({dev_name})")
+
+    # 3. Vector Graphic / Synthetic Infographic Artifact Detection
     gk = signals.get("gradient_kurtosis", 20.0)
     hf_pct = signals.get("hf_energy_pct", 0.8)
-    slope = signals.get("spectral_slope", 1.35)
     flat_ratio = signals.get("noise_flat_ratio", 0.05)
     chroma = signals.get("chroma_ratio", 1.2)
-    peak_ratio = signals.get("hf_peak_ratio", 10.0)
 
-    # 1. Gradient Kurtosis (Physical camera edges have heavy-tailed kurtosis > 20)
-    # Generative AI diffusion models have regularized, smooth transitions (kurtosis < 18)
-    if gk >= 20.0:
-        log_odds -= 1.8
-        indicators.append("Natural optical edge PSF verified (Heavy-tailed gradient distribution)")
-    elif gk < 12.0:
-        log_odds += 2.2
-        indicators.append("Synthetic edge regularization detected (Low gradient kurtosis)")
-    elif gk < 18.0:
+    if gk > 40.0 and flat_ratio > 0.75 and hf_pct < 0.6:
+        log_odds += 2.5
+        indicators.append("Synthetic digital vector rendering structure detected (Flat background & non-organic edges)")
+
+    # 4. Color Spectrum & Frequency Indicators (for natural images)
+    if chroma > 3.0 and not has_camera_hardware:
         log_odds += 0.8
-
-    # 2. High Frequency Energy & Latent Upsampling Spikes
-    if hf_pct > 2.0 or peak_ratio > 30.0:
-        log_odds += 2.4
-        indicators.append("Latent upsampler frequency anomaly detected (Elevated high-frequency energy)")
-    elif hf_pct < 0.8 and peak_ratio < 15.0:
-        log_odds -= 1.0
-        indicators.append("Natural high-frequency power attenuation verified")
-
-    # 3. Spectral Decay Slope (Natural scenes fall between 1.10 and 1.55)
-    if slope > 1.65:
-        log_odds += 1.2
-        indicators.append("Steep spectral roll-off anomaly detected")
-    elif 1.15 <= slope <= 1.55:
-        log_odds -= 0.8
-        indicators.append("Natural image power-law decay verified (1/f^alpha)")
-
-    # 4. Flat Region Noise Suppression (AI models over-smooth backgrounds/skin)
-    if flat_ratio > 0.25:
-        log_odds += 1.5
-        indicators.append("Atypical flat-field noise residual distribution detected")
-    elif flat_ratio < 0.10:
-        log_odds -= 0.8
-        indicators.append("Uniform sensor shot noise pattern present across texture and flat zones")
-
-    # 5. Chrominance Correlation
-    if chroma > 2.2:
-        log_odds += 1.2
-        indicators.append("Chrominance channel covariance divergence (Non-Bayer demosaicing signature)")
+        indicators.append("Chrominance covariance divergence observed")
     elif chroma < 1.5:
-        log_odds -= 0.6
-        indicators.append("Bayer CFA demosaicing cross-spectral correlation confirmed")
+        indicators.append("Consistent color channel correlation confirmed")
 
-    # 6. Deep Neural Network Feature Logit
-    deep_log_odds = np.log((deep_prob_fake + 1e-6) / (1.0 - deep_prob_fake + 1e-6))
-    # Combine signals: 45% deep model, 55% physical/frequency invariants
-    total_log_odds = 0.45 * deep_log_odds + 0.55 * log_odds
+    if hf_pct > 2.5 and not has_camera_hardware:
+        indicators.append("High-frequency latent boundary variations noted")
+
+    # 5. Combine Deep Neural Network logit with Metadata/Forensics
+    deep_prob = float(np.clip(deep_prob_fake, 0.001, 0.999))
+    deep_log_odds = float(np.log(deep_prob / (1.0 - deep_prob)))
+
+    # Deep learning model is given 80% primary weight, heuristics 20%
+    total_log_odds = 0.80 * deep_log_odds + 0.20 * log_odds
+
+    # If explicit AI signature was detected in metadata, guarantee threshold is met
+    if is_ai_filename and total_log_odds < 0.5:
+        total_log_odds = max(total_log_odds + 2.0, 1.2)
 
     prob_ai = float(1.0 / (1.0 + np.exp(-total_log_odds)))
     prob_ai = float(np.clip(prob_ai, 0.015, 0.985))

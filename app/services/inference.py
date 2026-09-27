@@ -34,7 +34,7 @@ def run_inference(tensor_input: np.ndarray, model_name: str = "resnet18", metada
         }
 
     verdict_label, confidence, prob_ai, indicators = synthesize_forensic_decision(
-        forensic_signals, deep_prob_fake=prob_fake
+        forensic_signals, deep_prob_fake=prob_fake, metadata=metadata
     )
 
     elapsed_ms = int(round((time.perf_counter() - start_time) * 1000))

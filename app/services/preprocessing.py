@@ -93,12 +93,31 @@ def load_and_preprocess_image(file_bytes: bytes) -> Tuple[Any, Dict[str, Any]]:
     tensor_input = np.transpose(norm_array, (2, 0, 1))
     tensor_input = np.expand_dims(tensor_input, axis=0)  # (1, 3, 32, 32)
 
+    # Extract EXIF camera hardware metadata
+    exif_found = False
+    exif_data = {}
+    try:
+        raw_exif = image._getexif()
+        if raw_exif:
+            from PIL.ExifTags import TAGS
+            exif_found = True
+            for tag_id, value in raw_exif.items():
+                tag_name = TAGS.get(tag_id, str(tag_id))
+                if isinstance(value, (str, int, float)):
+                    exif_data[tag_name] = value
+                else:
+                    exif_data[tag_name] = str(value)[:60]
+    except Exception:
+        exif_found = False
+
     metadata = {
         "dimensions": [orig_width, orig_height],
         "format": image_format,
         "input_resolution": "32x32 RGB",
         "high_freq_variance": round(freq_variance, 2),
         "mean_luminance": round(float(np.mean(gray_arr)), 2),
+        "exif_found": exif_found,
+        "exif_data": exif_data if exif_found else None,
         "forensic_signals": forensic_signals,
         **forensic_signals
     }
