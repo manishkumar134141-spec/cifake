@@ -207,6 +207,7 @@ CIFAKE V2 supports multiple seamless deployment options:
    - Vercel automatically detects the Vite framework with the included [vercel.json](vercel.json).
    - In **Project Settings** → **Environment Variables**, configure:
      - `VITE_API_URL`: URL of your deployed backend service (e.g., `https://cifake-backend.onrender.com`).
+     - *(Note: You can also set or change your cloud backend URL directly inside the live web UI under **Settings → Backend API Connection**)*.
    - Click **Deploy**.
 
 2. **Deploy Backend (FastAPI + PyTorch)**:
