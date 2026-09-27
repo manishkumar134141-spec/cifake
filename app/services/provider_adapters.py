@@ -129,7 +129,7 @@ class GeminiAdapter(VisionProviderAdapter):
         candidates = ["gemini-flash-lite-latest", "gemini-flash-latest", "gemini-pro-latest"]
         last_error = "Unknown error"
 
-        async with httpx.AsyncClient(timeout=35.0) as client:
+        async with httpx.AsyncClient(timeout=15.0) as client:
             for model_id in candidates:
                 try:
                     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_id}:generateContent?key={api_key}"
