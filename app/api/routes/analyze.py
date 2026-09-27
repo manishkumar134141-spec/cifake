@@ -104,10 +104,20 @@ async def analyze_image(
                     final_result = g_verdict
                     final_confidence = round(max(g_conf, l_conf), 4)
                 else:
-                    # In case of divergence (e.g. high-res infographics or complex diffusion prompts),
-                    # multimodal vision reviewing full resolution takes precedence
-                    final_result = g_verdict
-                    final_confidence = g_conf
+                    # In case of divergence:
+                    # 1. If generative AI provenance signature was detected, image is synthetic AI
+                    has_provenance = any("provenance" in str(ind).lower() for ind in local_res.get("indicators", []))
+                    if has_provenance:
+                        final_result = "AI-GENERATED"
+                        final_confidence = max(g_conf, 0.95)
+                    # 2. When ResNet18 has high certainty (>= 0.85), deep latent frequency artifacts override visual LLM impressions
+                    elif l_conf >= 0.85:
+                        final_result = l_verdict
+                        final_confidence = l_conf
+                    # 3. Otherwise multimodal visual review breaks the tie
+                    else:
+                        final_result = g_verdict
+                        final_confidence = g_conf
 
                 model_label = "Hybrid Consensus (ResNet18 + Gemini)"
                 metadata["resnet18_verdict"] = l_verdict

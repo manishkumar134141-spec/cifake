@@ -12,9 +12,22 @@ import {
 } from '../types';
 import { MODEL_REGISTRY } from '../lib/model-registry';
 
-const rawApiUrl = (import.meta.env.VITE_API_URL || '').trim();
-const isPlaceholder = !rawApiUrl || rawApiUrl.includes('your-backend-url') || rawApiUrl.includes('example.com');
-const API_BASE = (isPlaceholder ? '' : rawApiUrl.replace(/\/$/, '')) + '/api';
+export function getApiBase(): string {
+  const rawApiUrl = (import.meta.env.VITE_API_URL || '').trim();
+  const isPlaceholder = !rawApiUrl || rawApiUrl.includes('your-backend-url') || rawApiUrl.includes('example.com');
+  if (!isPlaceholder && rawApiUrl) {
+    return rawApiUrl.replace(/\/$/, '') + '/api';
+  }
+  if (typeof window !== 'undefined') {
+    const isDev = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port !== '8000';
+    if (isDev) {
+      return 'http://127.0.0.1:8000/api';
+    }
+  }
+  return '/api';
+}
+
+const API_BASE = getApiBase();
 
 export async function checkBackendHealth(): Promise<{ status: string }> {
   const response = await fetch(`${API_BASE}/health`);
@@ -22,7 +35,7 @@ export async function checkBackendHealth(): Promise<{ status: string }> {
   return response.json();
 }
 
-export async function analyzeImage(file: File, model: string = 'resnet18'): Promise<AnalysisResponse> {
+export async function analyzeImage(file: File, model: string = 'hybrid'): Promise<AnalysisResponse> {
   const formData = new FormData();
   formData.append('image', file);
   formData.append('model', model);
