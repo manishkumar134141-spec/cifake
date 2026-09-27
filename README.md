@@ -23,7 +23,7 @@
 - **Layer 1: Calibrated Deep Neural Detector (Required)**
   - **Modified ResNet18 (11.17M parameters)**: Re-engineered with a 3×3 stride-1 stem tailored for 32×32 resolution, producing 97.77% peak validation accuracy on the CIFAKE dataset. The only required detector engine.
 - **Layer 2: Multimodal Vision Review (Required API)**
-  - **Google Gemini Vision**: Secondary verification using Google Gemini multimodal vision model (`gemini-2.0-flash` / `gemini-1.5-flash`). Free API tier available from Google AI Studio: [https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey).
+  - **Google Gemini Vision**: Multimodal visual inspection using Google Gemini (`gemini-flash-lite-latest`, `gemini-flash-latest`, `gemini-pro-latest`). Free API tier available from Google AI Studio: [https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey).
 
 ### 2. Comprehensive Forensic Toolsuite
 - **Real PyTorch Grad-CAM**: Gradient-weighted Class Activation Mapping computes pixel-level saliency heatmaps and overlays identifying generative artifacts.
@@ -195,19 +195,48 @@ Open your browser to: `http://localhost:5173`
 
 ---
 
-## ☁️ Deploying to Vercel
+## 🚀 Deployment Guide
 
-The frontend is ready for 1-click deployment on **Vercel** with the included [vercel.json](vercel.json):
+CIFAKE V2 supports multiple seamless deployment options:
 
-1. Push your repository to GitHub.
-2. Import the repository in your [Vercel Dashboard](https://vercel.com/new).
-3. Vercel automatically detects the Vite configuration:
-   - **Framework Preset**: Vite
-   - **Build Command**: `npm run build`
-   - **Output Directory**: `dist`
-4. In **Project Settings** → **Environment Variables**, add:
-   - `VITE_API_URL`: URL of your deployed backend service (e.g. `https://your-cifake-backend.onrender.com` or your cloud server).
-5. Click **Deploy**. Vercel rewrites will ensure client-side routing works smoothly across all pages.
+### Option 1: Vercel (Frontend) + Cloud Backend (Render / Railway / VPS)
+
+1. **Deploy Frontend to Vercel**:
+   - Push your repository to GitHub.
+   - Import the repository in [Vercel Dashboard](https://vercel.com/new).
+   - Vercel automatically detects the Vite framework with the included [vercel.json](vercel.json).
+   - In **Project Settings** → **Environment Variables**, configure:
+     - `VITE_API_URL`: URL of your deployed backend service (e.g., `https://cifake-backend.onrender.com`).
+   - Click **Deploy**.
+
+2. **Deploy Backend (FastAPI + PyTorch)**:
+   - Use the included [render.yaml](render.yaml) on **Render** (New → Blueprint) or **Railway** (New Project → Deploy from GitHub repo).
+   - Set environment variable: `GEMINI_API_KEY=your_key_here`.
+
+---
+
+### Option 2: 1-Click All-in-One Docker Container (Recommended)
+
+The included multi-stage [Dockerfile](Dockerfile) builds the React frontend and serves both the FastAPI API and the React Single Page Application together on a single port (`8000`).
+
+```bash
+# Build the production container
+docker build -t cifake-app .
+
+# Run container (pass GEMINI_API_KEY)
+docker run -p 8000:8000 -e GEMINI_API_KEY="your_api_key" cifake-app
+```
+Then access the complete app at `http://localhost:8000`.
+
+---
+
+### Option 3: Docker Compose
+
+For rapid local orchestration:
+```bash
+docker compose up --build
+```
+The application will be live at `http://localhost:8000` with hot-reloading and environment configuration.
 
 ---
 

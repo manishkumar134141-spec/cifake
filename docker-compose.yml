@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  cifake-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cifake-engine
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+    restart: unless-stopped
